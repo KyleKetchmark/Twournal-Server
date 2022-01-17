@@ -11,8 +11,9 @@ app.use(Express.json())
 app.use(require('./middleware/headers'))
 
 
-app.use('/twournal', middleware.validateSession, controllers.twournalController)
 app.use('/user', controllers.userController)
+app.use('/twournal', middleware.validateSession, controllers.twournalController)
+app.use('/tweet', middleware.validateSession, controllers.tweetController)
 
 dbConnection.authenticate()
 .then(() => dbConnection.sync())

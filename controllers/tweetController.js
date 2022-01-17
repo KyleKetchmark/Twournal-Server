@@ -1,11 +1,12 @@
 const Express = require('express')
 const router = require('express').Router()
-const {TweetTbl} = require('../models')
+const {models} = require('../models')
 
 // router.get('/practice', (req, res) => {
 //     res.send('Practice Route is working!')
 // })
 
+// NEED to be logged in to access Twitter db
 router.post('/create', async (req, res) => {
     const{username, tweetBody, datePublished} = req.body;
     const{id} = req.user;
@@ -16,7 +17,7 @@ router.post('/create', async (req, res) => {
         owner: id,
     } 
     try{
-        const newTweet = await TweetTbl.create(tweetEntry);
+        const newTweet = await models.TweetModel.create(tweetEntry);
         res.status(200).json(newTweet);
     } catch (err) {
         res.status(500).json({error: err});
@@ -25,10 +26,10 @@ router.post('/create', async (req, res) => {
 
 // Find all Tweets for logged in user
 router.get('/:id', async (req, res) => {
-    const {id} = req.params
+    const {id} = req.user;
 
     try {
-        const results = await TweetTbl.findAll({
+        const results = await models.TweetModel.findAll({
             where: {owner: id}
         });
         res.status(200).json(results);
@@ -59,7 +60,7 @@ router.get('/:id', async (req, res) => {
 //     };
 
 //     try{
-//         const update = await MealModel.update(updatedMeal, query);
+//         const update = await TweetModel.update(updatedMeal, query);
 //         res.status(200).json(update);
 //     } catch(err) {
 //         res.status(500).json({error: err});
@@ -78,7 +79,7 @@ router.delete("/delete/:id", async (req, res) => {
             }
         };
 
-        await TweetTbl.destroy(query)
+        await models.TweetModel.destroy(query)
         res.status(200).json({message: "Twournal Entry Removed"});
     }   catch(err) {
         res.status(500).json({error: err})

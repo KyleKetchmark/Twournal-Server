@@ -1,54 +1,85 @@
-const Express = require('express')
+const Express = require('express');
+const {models} = require('../models');
 const router = require('express').Router()
-const {TwournalModel} = require('../models')
+// const { TwournalModel } = require('../models');
+// const { UserModel } = require('../models/userModel');
 
-router.get('/practice', (req, res) => {
-    res.send('Practice Route is working!')
-})
+// router.get('/practice', (req, res) => {
+//     res.send('Practice Route is working!')
+// })
 
 router.post('/create', async (req, res) => {
-    const{title, body, date, twitterAct} = req.body;
-    const{id} = req.user;
-    const twournalEntry = {
+    const { title, body, date, twitterAct } = req.body;
+    // const { id } = req.user;
+    try {
+    const newTwournal = await models.TwournalModel.create({
         title,
         body,
         date,
-        twitterAct,
-        owner: id,
-    } 
-
-    try{
-        const newTwournal = await TwournalModel.create(twournalEntry);
-        res.status(200).json(newTwournal);
+        // twitterAct
+    })
+        res.status(200).json({
+            newTwournal: newTwournal,
+            message: 'post created'
+        });
     } catch (err) {
-        res.status(500).json({error: err});
+        res.status(500).json({ error: `Failed to create post: ${err}` });
     }
 });
+
+//Get all associate user twounrals and tweets
+
+router.get('/userinfo', async (req, res) => {
+    try {
+        await models.UserModel.findAll({
+            include: [
+                {
+                    model: models.TwournalModel,
+                    include: [
+                        {
+                            model: models.TweetModel
+                        }
+                    ]
+                }
+            ]
+        })
+            .then(
+                users => {
+                    res.status(200).json({
+                        users: users
+                    });
+                }
+            )
+    } catch (err) {
+        res.status(500).json({
+            error: `Failed to retrieve users: ${err}`
+        })
+    }
+})
 
 // Find all twournals for logged in user via my Twounrals
 router.get('/:id', async (req, res) => {
-    const {id} = req.params
-
+    const { id } = req.user;
     try {
-        const results = await TwournalModel.findAll({
-            where: {owner: id}
+        const results = await models.TwournalModel.findAll({
+            where: { userId: id }
         });
         res.status(200).json(results);
-    } catch(err) {
-        res.status(500).json({error: err})
+    } catch (err) {
+        res.status(500).json({ error: err })
     }
 });
 
-
-router.put("/update/:twournalId", async (req, res) => {
-    const{title, body, date, twitterAct} = req.body;
-    const entryId = req.params.twournalId;
-    const userId = req.user.id;
+// Twounral Put Route needs fixing
+router.put("/update/:entryId", async (req, res) => {
+    const { title, body, date, twitterAct } = req.body;
+    const entryId = req.params.id;
+    const { id } = req.user;
 
     const query = {
         where: {
-            id: entryId,
-            owner: userId
+            entryId: entryId,
+            owner: id
         }
     };
     const updatedTwournal = {
@@ -56,33 +87,33 @@ router.put("/update/:twournalId", async (req, res) => {
         body: body,
         date: date,
         twitterAct: twitterAct,
-        owner: id,
-    } 
+        owner: id
+    }
 
-    try{
-        const update = await TwournalModel.update(updatedTwournal, query);
+    try {
+        const update = await models.TwournalModel.update(updatedTwournal, query);
         res.status(200).json(update);
-    } catch(err) {
-        res.status(500).json({error: err});
+    } catch (err) {
+        res.status(500).json({ error: err });
     }
 });
 
 router.delete("/delete/:id", async (req, res) => {
-    const ownerId = req.user.id;
-    const twournalId = req.params.id;
+    const userId = req.user.id;
+    const twounralId = req.params.id;
 
     try {
         const query = {
             where: {
-                id: twournalId,
-                owner: ownerId
+                twounralId: twounralId,
+                userId: userId
             }
         };
 
-        await TwournalModel.destroy(query)
-        res.status(200).json({message: "Twournal Entry Removed"});
-    }   catch(err) {
-        res.status(500).json({error: err})
+        await models.TwournalModel.destroy(query)
+        res.status(200).json({ message: "Twournal Entry Removed" });
+    } catch (err) {
+        res.status(500).json({ error: err })
     }
 });
 

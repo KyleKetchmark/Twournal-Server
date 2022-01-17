@@ -13,7 +13,19 @@ const Tweet = db.define("tweet", {
     datePublished: {
         type: DataTypes.DATE,
         allowNull: false
-    } 
+    },
+    // owner: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false
+    // }
+    // userId: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false
+    // },
+    // twournalId: {
+    //     type: DataTypes.INTEGER,
+    //     allowNull: false
+    // }
 });
 
 module.exports = Tweet;

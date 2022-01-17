@@ -5,10 +5,12 @@ const Twournal = db.define("twournal", {
     title: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {max: 75}
     },
     body: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {max: 1000}
     },
     date: {
         type: DataTypes.DATE,
@@ -16,11 +18,8 @@ const Twournal = db.define("twournal", {
     },
     twitterAct: {
         type: DataTypes.STRING,
-        allowNull: false,
-    },
-    owner: {
-        type: DataTypes.INTEGER
-    },
+        allowNull: true,
+    }
 })
 
 module.exports = Twournal;
