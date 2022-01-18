@@ -2,6 +2,12 @@ const {DataTypes} = require("sequelize")
 const db = require("../db")
 
 const Twournal = db.define("twournal", {
+    id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+        allowNull: false,
+    },
     title: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -19,6 +25,10 @@ const Twournal = db.define("twournal", {
     twitterAct: {
         type: DataTypes.STRING,
         allowNull: true,
+    },
+    tweetId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
     }
 })
 

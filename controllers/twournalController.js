@@ -9,53 +9,58 @@ const router = require('express').Router()
 // })
 
 router.post('/create', async (req, res) => {
-    const { title, body, date, twitterAct } = req.body;
-    // const { id } = req.user;
+    const { title, body, date, twitterAct, tweetId} = req.body;
+    const { id } = req.user;
     try {
     const newTwournal = await models.TwournalModel.create({
         title,
         body,
         date,
-        // twitterAct
+        twitterAct,
+        tweetId,
+        userId: id // need to check if right
     })
         res.status(200).json({
             newTwournal: newTwournal,
             message: 'post created'
         });
     } catch (err) {
-        res.status(500).json({ error: `Failed to create post: ${err}` });
+        res.status(500).json({error: `Failed to create post: ${err}`});
     }
 });
 
-//Get all associate user twounrals and tweets
-
-router.get('/userinfo', async (req, res) => {
-    try {
-        await models.UserModel.findAll({
-            include: [
-                {
-                    model: models.TwournalModel,
-                    include: [
-                        {
-                            model: models.TweetModel
-                        }
-                    ]
-                }
-            ]
-        })
-            .then(
-                users => {
-                    res.status(200).json({
-                        users: users
-                    });
-                }
-            )
-    } catch (err) {
-        res.status(500).json({
-            error: `Failed to retrieve users: ${err}`
-        })
-    }
-})
+//Get all associate user twournals and tweets
+// const{admin} = models.UserModel;
+// if(admin === true) {
+//     //create button on frontend
+//     router.get('/userinfo', async (req, res) => {
+//         try {
+//             await models.UserModel.findAll({
+//                 include: [
+//                     {
+//                         model: models.TwournalModel,
+//                         include: [
+//                             {
+//                                 model: models.TweetModel
+//                             }
+//                         ]
+//                     }
+//                 ]
+//             })
+//                 .then(
+//                     users => {
+//                         res.status(200).json({
+//                             users: users
+//                         });
+//                     }
+//                 )
+//         } catch (err) {
+//             res.status(500).json({
+//                 error: `Failed to retrieve users: ${err}`
+//             })
+//         }
+//     })
+//   }
 
 // Find all twournals for logged in user via my Twounrals
 router.get('/:id', async (req, res) => {
@@ -78,8 +83,8 @@ router.put("/update/:entryId", async (req, res) => {
 
     const query = {
         where: {
-            entryId: entryId,
-            owner: id
+            twournalId: entryId,
+            userId: id
         }
     };
     const updatedTwournal = {
@@ -87,7 +92,7 @@ router.put("/update/:entryId", async (req, res) => {
         body: body,
         date: date,
         twitterAct: twitterAct,
-        owner: id
+        userId: id
     }
 
     try {
