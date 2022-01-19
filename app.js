@@ -6,7 +6,6 @@ const controllers = require("./controllers");
 const middleware = require("./middleware");
 
 
-
 app.use(Express.json());
 app.use(require('./middleware/headers'));
 

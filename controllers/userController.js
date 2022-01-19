@@ -13,7 +13,7 @@ router.post('/register', async (req, res) => {
             email,
             password: bcrypt.hashSync(password, 12),
             admin,
-            // twitterAct
+            twitterAct
         });
         let token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
         res.status(200).json({
