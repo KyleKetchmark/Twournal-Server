@@ -1,20 +1,21 @@
 const router = require('express').Router()
 const { UniqueConstraintError } = require('sequelize');
-const { UserModel } = require('../models')
+const { models } = require('../models')
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
 
 router.post('/register', async (req, res) => {
-    let { firstName, lastName, email, password, admin } = req.body;
+    let { firstName, lastName, email, password, admin, twitterAct } = req.body;
     try {
-        let User = await UserModel.create({
+        let newUser = await models.UserModel.create({
             firstName,
             lastName,
             email,
             password: bcrypt.hashSync(password, 12),
             admin,
+            twitterAct
         });
-        let token = jwt.sign({ id: User.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
+        let token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: 60 * 60 * 24 })
         res.status(200).json({
             message: "User successfully registered",
             sessionToken: token
@@ -26,7 +27,7 @@ router.post('/register', async (req, res) => {
             });
         } else {
             res.status(500).json({
-                message: "User failed to register"
+                message: `Failed to register user: ${err}`
             })
         }
     }
@@ -35,7 +36,7 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     let { email, password } = req.body;
     try {
-        let loginUser = await UserModel.findOne({
+        let loginUser = await models.UserModel.findOne({
             where: {
                 email,
             },
