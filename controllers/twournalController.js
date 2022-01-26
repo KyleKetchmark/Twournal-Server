@@ -56,7 +56,7 @@ if(admin === true) {
     }
 })
 // Find all twournals for logged in user via my Twounrals
-router.get('/:id', async (req, res) => {
+router.get('/', async (req, res) => {
     const { id } = req.user;
     try {
         const results = await models.TwournalModel.findAll({
@@ -98,12 +98,10 @@ router.put("/update/:twournalId", async (req, res) => {
 
 router.delete("/delete/:id", async (req, res) => {
     const userId = req.user.id;
-    const twournalId = req.params.id;
 
     try {
         const query = {
             where: {
-                id: twournalId,
                 userId: userId
             }
         };

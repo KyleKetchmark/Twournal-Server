@@ -12,7 +12,7 @@ app.use(require('./middleware/headers'));
 
 app.use('/user', controllers.userController);
 app.use('/twournal', middleware.validateSession, controllers.twournalController);
-// app.use('/tweet', middleware.validateSession, controllers.tweetController)
+app.use('/tweet', middleware.validateSession, controllers.tweetController)
 
 dbConnection.authenticate()
 .then(() => dbConnection.sync())
