@@ -19,7 +19,7 @@ FYI in order to run this server you'll need to utilize a 3rd party routing servi
 - controllers - routing for entire applciation and endpoints
 
 ## Check out the deployed Heroku link here!
-![Twournal App](https://ketch-twournal-client.herokuapp.com/)
+Check out [Twournal](https://ketch-twournal-client.herokuapp.com/)
 
 
 
